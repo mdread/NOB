@@ -1,9 +1,8 @@
 package net.caoticode.nob;
 
-
 /**
- * @author daniel
+ * @author Daniel Camarda [0xcaos@gmail.com]
  */
 public interface IsEmpty {
-    boolean isEmpty();
+	boolean isEmpty();
 }
