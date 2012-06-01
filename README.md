@@ -2,7 +2,7 @@ NOB (NotOnlyBoolean)
 ====================
 
 All values with this class can be used as logic values.
-Some of the more "empty" ones, like new int[0], 0, "" and null represent logical falsity,
+Some of the more "empty" ones, like *new int[0]*, *0*, *""* and *null* represent logical falsity,
 while most other values (like *new int[]{0}*, *1* or *"Hello, world"*) represent logical truth.
 
 Now, logical expressions like a and b are evaluated like this: 
