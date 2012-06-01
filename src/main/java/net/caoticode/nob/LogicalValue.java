@@ -189,14 +189,13 @@ public class LogicalValue {
 	// PROCESOR METHODS
 	public boolean bool() {
 		doProcess();
-		// process(vl);
 		return boolResult;
 	}
 
-	public Object val() {
+	@SuppressWarnings("unchecked")
+	public <T> T val() {
 		doProcess();
-		// process(vl);
-		return valResult;
+		return (T)valResult;
 	}
 
 	public String valAsString() {
@@ -231,10 +230,10 @@ public class LogicalValue {
 		return (Boolean) val();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T valAs(Class<T> type) {
-		return (T) val();
-	}
+//	@SuppressWarnings("unchecked")
+//	public <T> T valAs(Class<T> type) {
+//		return (T) val();
+//	}
 
 	public Result result() {
 		doProcess();
