@@ -8,83 +8,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("unchecked")
-
 /**
- * Questo testo descrittivo e un estratto dell'articolo "Instant Python"(http://hetland.org/writing/instant-python.html)
- * questa classe simula lo stesso comportamento.
- * alcune parti del testo sono state modificate per riflettere i tipi di dati e la sintassis di java al posto
- * di quella python
- * 
- * 
- * All values with this class can be used as logic values. 
- * Some of the more "empty" ones, like new int[0], 0, "" and null represent logical falsity,
- * while most other values (like new int[]{0}, 1 or "Hello, world") represent logical truth.
- * Now, logical expressions like a and b are evaluated like this: 
- * 	First, check if a is true. If it is not, then simply return it. If it is, 
- * 	then simply return b (which will represent the truth value of the expression.) 
- * 	The corresponding logic for a or b is: If a is true, then return it. If it isn't, then return b.
- * This mechanism makes "and" and "or" behave like the boolean operators they are supposed to implement, but 
- * they also let you write short and sweet little conditional expressions. For instance, the statement
- * 
- * if(!a.equals("")){
- * 		System.out.println(a);
- * }else{
- * 		System.out.println(b);
- * }
- * 
- * Could instead be written:
- * 
- * System.out.println($(a).or(b));
- * 
- * ****************************************************************************************************************************************
- * 
- * SimpleLogic e stata pensata per avere una sintassis il piu semplice, compatta e intuitiva possibile in modo da 
- * aumentare la produttività e la leggibilità del codice
- * la classe mette a disposizione tre metodi fondamentali: and, or e not che corrispondono agli operatori condizionali java &&, ||, e !
- * ma con alcune funzionalita extra. i condizionali di java possono essere utilizzati solo con valori di tipo booleano, cioè true e false
- * e questo significa che per evaluare la validita di una condizione siamo obbligati a trasformate i nostri dati in valori di tipo booleano 
- * come ad esempio per verificare se il valore di una stringa puo essere considerato true o false e comune usare il 
- * metodo equals per assicurarsi che non contenga una stringa vuota e usare il risultato booleano di quel metodo in un espressione 
- * piu complessa; con questa classe tutti i tipi di dati, oltre ai boolean, hanno inherente al suo valore un significato di verita o falsita, 
- * o piu specificamente di vuoto o pieno il che permette di usare i valori in modo diretto in espressioni booleane.
- * il concetto di vuoto o pieno varia a seconda del tipo di dato, in seguito un riassunto.
- * i seguenti valori sono considerati false:
- * 		qualsiasi oggetto null, una stringha di dimensioni 0, un integer, short o byte uguale a 0, un float o un double uguali a 0, 
- * 		un char che fa parte dei caratteri ignorabili(come i caratteri di controllo... Character.isIdentifierIgnorable), 
- * 		un array di 0 elementi, una collezione con 0 elementi, il booleano false.
- * qualsiasi altro oggetto non null e considerato true 
- * 
- * oltre all'utilizzo in modo diretto dei valori e possibile ottenere il risultato di un'intera espressione booleana in due formati:
- * 	il classico true o false o il valore associato alla "verità" o "falsità" dell'espressione, questo concetto e piu chiaro con un esempio.
- * 
- * System.out.println( $('a').or('b').and('c').bool() ) //true
- * System.out.println( $('a').or('b').and('c') ) // a
- * 
- * cominciamo per vedere come viene evaluata l'espressione 'a' or 'b' and 'c'; per prima cosa viene evaluato il char 'b' per verificate
- * la sua verità o falsità, il quale viene evaluato a true, poi viene evaluato 'c', anche true, poi viene fatta l'operazione and tra
- * quei due valori appenda validati, in questo caso il risultato e come ci si puo aspettare true in termini di valori booleani, 
- * e 'c' in termini dei valori che si stanno evaluando a questo punto viene evaluato 'a' anche a true e viene effettuato l'or tra
- * 'a' e 'c' dando come risultato 'a'.
- * analizzando l'esempio con piu dettaglio si puo vedere che gli operatori hanno una precedenza uno sull'altro, l'operatore and ha precedenza 
- * sul operatore or e il not, non presente in questo esempio, ha precedenza sul and; questo spiega il perche viene evaluato prima
- * 'b' and 'c' e non 'a' or 'b'
- * un altro dato importante e che in un operazione and se tutti i valori sino true viene restituito l'ultimo di questi valori evaluato mentre
- * se uno dei valori e false e questo il valore restituito, ad esempio:
- * 		$('a').and('b').and('c') restituisce 'c', ma invece
- * 		$('a').and(0).and('c') restituisce 0 visto che a quel punto il risultato dell'espressione e stato trovato(anche se dopo quel valore false
- * 		ci stanno altri che sono true, come in questo caso 'c', visto che si tratta di un AND il risultato sarebbe comunque false e non ha senso
- * 		andare avanti.
- * invece quando si tratta di un or viene restituito il primo valore true e altrimenti l'ultimo valore false, esempio:
- *  	$('a').or('b').or('c') restituisce 'a'
- *  	$("").or(0).or(0.00) restituisce 0.00, questo e cosi perche in on'operazione or ce sempre la possibilita che dopo un valore false ci sia
- *  	un valore true che faccia diventare true il risultao dell'espressione.
- *  
- * in sintesi viene restituito l'ultimo valore che viene evaluato per determinare la verita o falsita dell'espressione
- * 
- * 
- * @author Daniel Camarda
+ * @author Daniel Camarda [0xcaos@gmail.com]
  */
+
 public class LogicalValue{
 	//STATIC CONSTANTS
 	private static final Float ZERO_F = new Float(0.0F);
@@ -301,7 +228,8 @@ public class LogicalValue{
         return (Boolean)val();
     }
 
-    public<T> T valAs(Class<T> type){
+    @SuppressWarnings("unchecked")
+	public<T> T valAs(Class<T> type){
         return (T)val();
     }
 	
