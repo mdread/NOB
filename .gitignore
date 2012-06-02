@@ -2,5 +2,5 @@
 .project
 .springBeans
 .settings/
-target/**/*
+target/
 
