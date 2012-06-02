@@ -8,6 +8,7 @@ public class Constraint {
 	public static enum Restriction{
 		EQ, NE, GT, LT, GE, LE, TRUE, FALSE, NOOP
 	}
+	
 	public static final Constraint NOOP = new Constraint(null, Restriction.NOOP);
 
 	private Restriction restriction;
