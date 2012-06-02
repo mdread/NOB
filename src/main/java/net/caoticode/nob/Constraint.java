@@ -38,8 +38,8 @@ public class Constraint {
 		return new Constraint(obj, Restriction.LE);
 	}
 	
-	public static Constraint cons(Object obj, boolean bool){
-		return new Constraint(obj, bool ? Restriction.TRUE : Restriction.FALSE);
+	public static Constraint cons(boolean bool){
+		return new Constraint(null, bool ? Restriction.TRUE : Restriction.FALSE);
 	}
 	
 	public Restriction getRestriction() {
@@ -56,7 +56,7 @@ public class Constraint {
 				throw new RuntimeException("can not eval on NOOP Constraint");
 		if(val == null && getValue() == null)
 			return true;
-		if(val == null ^ getValue() == null)
+		if((val == null ^ getValue() == null) && restriction != Restriction.TRUE && restriction != Restriction.FALSE)
 			return false;
 		
 		switch(restriction){

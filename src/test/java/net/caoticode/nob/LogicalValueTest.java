@@ -10,34 +10,34 @@ public class LogicalValueTest {
 
 	@Test
 	public void testAndBoolean() {
-		assertEquals($(true).and(true).bool(), true);
-		assertEquals($(true).and(false).bool(), false);
-		assertEquals($(false).and(true).bool(), false);
-		assertEquals($(false).and(false).bool(), false);
+		assertTrue($(true).and(true).bool());
+		assertFalse($(true).and(false).bool());
+		assertFalse($(false).and(true).bool());
+		assertFalse($(false).and(false).bool());
 	}
 
 	@Test
 	public void testOrBoolean() {
-		assertEquals($(true).or(true).bool(), true);
-		assertEquals($(true).or(false).bool(), true);
-		assertEquals($(false).or(true).bool(), true);
-		assertEquals($(false).or(false).bool(), false);
+		assertTrue($(true).or(true).bool());
+		assertTrue($(true).or(false).bool());
+		assertTrue($(false).or(true).bool());
+		assertFalse($(false).or(false).bool());
 	}
 	
 	@Test
 	public void testNotBoolean() {
-		assertEquals(not(true).bool(), false);
-		assertEquals(not(false).bool(), true);
+		assertFalse(not(true).bool());
+		assertTrue(not(false).bool());
 	}
 	
 	@Test
 	public void testOperatorBooleanPriority() {
-		assertEquals($(true).and(false).or(true).bool(), true);
-		assertEquals($(true).and(true).or(false).bool(), true);
-		assertEquals($(false).or(true).and(false).bool(), false);
-		assertEquals($(false).or(true).and(true).bool(), true);
-		assertEquals($(false).and(false).or(true).and(true).bool(), true);
-		assertEquals($(false).and($(false).or(true)).and(true).bool(), false);
+		assertTrue($(true).and(false).or(true).bool());
+		assertTrue($(true).and(true).or(false).bool());
+		assertFalse($(false).or(true).and(false).bool());
+		assertTrue($(false).or(true).and(true).bool());
+		assertTrue($(false).and(false).or(true).and(true).bool());
+		assertFalse($(false).and($(false).or(true)).and(true).bool());
 	}
 	
 	@Test
@@ -53,13 +53,15 @@ public class LogicalValueTest {
 	
 	@Test
 	public void testConstraintsBoolean() {
-		assertEquals($("a", eq("a")).bool(), true);
-		assertEquals($("a", ne("a")).bool(), false);
-		assertEquals($(24, gt(2)).bool(), true);
-		assertEquals($(24, lt(2)).bool(), false);
-		assertEquals($(24, le(24)).bool(), true);
-		assertEquals($(24, ge(23)).bool(), true);
-		assertEquals($(24, le(22)).bool(), false);
+		assertTrue($("a", eq("a")).bool());
+		assertFalse($("a", ne("a")).bool());
+		assertTrue($(24, gt(2)).bool());
+		assertFalse($(24, lt(2)).bool());
+		assertTrue($(24, le(24)).bool());
+		assertTrue($(24, ge(23)).bool());
+		assertFalse($(24, le(22)).bool());
+		assertFalse($("a", cons(false)).bool());
+		assertTrue($("a", cons(true)).bool());
 	}
 	
 	@Test
