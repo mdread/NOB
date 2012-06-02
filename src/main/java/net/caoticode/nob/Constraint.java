@@ -1,5 +1,9 @@
 package net.caoticode.nob;
 
+/**
+ * @author Daniel Camarda [0xcaos@gmail.com]
+ */
+
 public class Constraint {
 	public static enum Restriction{
 		EQ, NE, GT, LT, GE, LE, TRUE, FALSE, NOOP

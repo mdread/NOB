@@ -6,6 +6,10 @@ import static net.caoticode.nob.Constraint.*;
 
 import org.junit.Test;
 
+/**
+ * @author Daniel Camarda [0xcaos@gmail.com]
+ */
+
 public class LogicalValueTest {
 
 	@Test
