@@ -35,11 +35,20 @@ public class LogicalValue {
 	private class Element implements Cloneable {
 		public Operator op;
 		public Object val;
+		public Constraint cons;
 		public boolean bool;
-
+		
+		public Element(Object val, Operator op, Constraint cons) {
+			this.op = op;
+			this.val = val;
+			this.cons = cons;
+			this.bool = eval();
+		}
+		
 		public Element(Object val, Operator op, boolean bool) {
 			this.op = op;
 			this.val = val;
+			this.cons = Constraint.NOOP;
 			this.bool = bool;
 		}
 
@@ -47,9 +56,19 @@ public class LogicalValue {
 			this.op = op;
 			this.val = null;
 		}
-
-		protected Element clone() {
-			return new Element(val, op, bool);
+		
+		public Element clone() {
+			Element e = new Element(val, op, bool);
+			e.cons = cons;
+			return e;
+		}
+		
+		public boolean eval(){
+			if(cons.getRestriction() != Constraint.Restriction.NOOP){
+				return cons.eval(val);
+			}else{
+				return LogicalValue.bool(val);
+			}
 		}
 	}
 
@@ -70,11 +89,14 @@ public class LogicalValue {
 			this._this = _this;
 		}
 
-		public LogicalValue not(Object value) {
+		public LogicalValue not(Object value, Constraint cons) {
 			Element e = new Element(Operator.NOT);
 			_this.vl.add(e);
 
-			return _this.and(value);
+			return _this.and(value, cons);
+		}
+		public LogicalValue not(Object value) {
+			return not(value, Constraint.NOOP);
 		}
 	}
 
@@ -85,20 +107,23 @@ public class LogicalValue {
 			this._this = _this;
 		}
 
-		public LogicalValue not(Object value) {
+		public LogicalValue not(Object value, Constraint cons) {
 			Element e = new Element(Operator.NOT);
 			_this.vl.add(e);
 
-			return _this.or(value);
+			return _this.or(value, cons);
+		}
+		public LogicalValue not(Object value) {
+			return not(value, Constraint.NOOP);
 		}
 	}
 
 
 	// *******CONSTRUCTORS*******
 
-	private LogicalValue(Object value) {
+	private LogicalValue(Object value, Constraint cons) {
 		this();
-		first(value);
+		first(value, cons);
 	}
 
 	private LogicalValue() {
@@ -108,13 +133,21 @@ public class LogicalValue {
 
 
 	// ********STATIC METHODS********
-
+	
+	public static LogicalValue $(Object val, Constraint cons) {
+		return new LogicalValue(val, cons);
+	}
+	
 	public static LogicalValue $(Object val) {
-		return new LogicalValue(val);
+		return $(val, Constraint.NOOP);
 	}
 
+	public static LogicalValue not(Object val, Constraint cons) {
+		return new LogicalValue().not().first(val, cons);
+	}
+	
 	public static LogicalValue not(Object val) {
-		return new LogicalValue().not().first(val);
+		return not(val, Constraint.NOOP);
 	}
 
 	public static boolean bool(Object value) {
@@ -172,20 +205,27 @@ public class LogicalValue {
 	// ********PUBLIC METHODS********
 
 	// CHAINABLE METHODS
+	public LogicalValue or(Object value, Constraint cons) {
+		Element e = new Element(value, Operator.OR, cons);
+		vl.add(e);
+
+		return this;
+	}
 	public LogicalValue or(Object value) {
-		Element e = new Element(value, Operator.OR, bool(value));
+		return or(value, Constraint.NOOP);
+	}
+
+	public LogicalValue and(Object value, Constraint cons) {
+		Element e = new Element(value, Operator.AND, cons);
 		vl.add(e);
 
 		return this;
 	}
 
 	public LogicalValue and(Object value) {
-		Element e = new Element(value, Operator.AND, bool(value));
-		vl.add(e);
-
-		return this;
+		return and(value, Constraint.NOOP);
 	}
-
+	
 	// PROCESOR METHODS
 	public boolean bool() {
 		doProcess();
@@ -250,13 +290,13 @@ public class LogicalValue {
 
 	// *******PRIVATE METHODS********
 
-	private LogicalValue first(Object value) {
-		Element e = new Element(value, Operator.FIRST_VAL, bool(value));
+	private LogicalValue first(Object value, Constraint cons) {
+		Element e = new Element(value, Operator.FIRST_VAL, cons);
 		vl.add(e);
 
 		return this;
 	}
-
+	
 	private LogicalValue not() {
 		Element e = new Element(Operator.NOT);
 		vl.add(e);
@@ -280,8 +320,7 @@ public class LogicalValue {
 		for (int i = 0; i < vl.size(); i++) {
 			Element e = (Element) vl.get(i);
 			if (e.op == Operator.NOT) {
-				// si presuppone che dopo un NOT esista sempre un altro
-				// elemento, garantirlo da qualche parte...
+				// dopo un NOT esiste sempre un altro elemento
 				Element nextE = (Element) vl.get(++i); // incremento i per prendere il prossimo elemento e saltarlo nella prossima iterazione
 				nextE.bool = !nextE.bool;
 				nextE.val = Boolean.valueOf(nextE.bool);
@@ -312,8 +351,7 @@ public class LogicalValue {
 
 					prevE = (Element) newvl.get(newvl.size() - 1);
 					j++;
-				} while (j < vl.size()
-						&& ((Element) vl.get(j)).op == Operator.AND);
+				} while (j < vl.size() && ((Element) vl.get(j)).op == Operator.AND);
 
 				i += j - i - 1;
 			} else {
@@ -327,13 +365,19 @@ public class LogicalValue {
 		// restituisco il primo elemento true
 		for (int i = 0; i < vl.size(); i++) {
 			Element e = (Element) vl.get(i);
-
-			valResult = ((Element) vl.get(i)).val;
-
+			
+			if(e.cons.getRestriction() == Constraint.Restriction.NOOP){
+				valResult = ((Element) vl.get(i)).val;
+			}else{
+				valResult = null;
+			}
+			
 			if (e.bool) {
+				valResult = ((Element) vl.get(i)).val;
 				boolResult = true;
 				break;
 			}
 		}
 	}
+	
 }
