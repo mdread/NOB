@@ -1,12 +1,32 @@
 package net.caoticode.nob;
 
+import java.lang.reflect.Method;
+
 /**
  * @author Daniel Camarda [0xcaos@gmail.com]
  */
 
 public class Constraint {
 	public static enum Restriction{
-		EQ, NE, GT, LT, GE, LE, TRUE, FALSE, NOOP
+		EQ, NE, GT, LT, GE, LE, TRUE, FALSE, REFLEX, NOOP
+	}
+	
+	private static class Reflex{
+		String methodName;
+		Object[] parameters;
+		
+		public Reflex(String methodName, Object[] parameters) {
+			this.methodName = methodName;
+			this.parameters = parameters;
+		}
+		
+		public Class<?>[] getParametersClasses(){
+			Class<?>[] classes = new Class[parameters.length];
+			for (int i = 0; i < parameters.length; i++) {
+				classes[i] = parameters[i].getClass();
+			}
+			return classes;
+		}
 	}
 	
 	public static final Constraint NOOP = new Constraint(null, Restriction.NOOP);
@@ -47,6 +67,10 @@ public class Constraint {
 		return new Constraint(null, bool ? Restriction.TRUE : Restriction.FALSE);
 	}
 	
+	public static Constraint reflex(String methodName, Object ... params ){
+		return new Constraint(new Reflex(methodName, params), Restriction.REFLEX);
+	}
+	
 	public Restriction getRestriction() {
 		return restriction;
 	}
@@ -81,6 +105,8 @@ public class Constraint {
 				return true;
 			case FALSE:
 				return false;
+			case REFLEX:
+				return invokeReflex(val, (Reflex)getValue());
 			default:
 				return false;
 		}
@@ -88,5 +114,24 @@ public class Constraint {
 	
 	private boolean areComparable(Object obj1, Object obj2){
 		return obj1 instanceof Comparable && obj1.getClass().isAssignableFrom(obj2.getClass());
+	}
+	
+	private boolean invokeReflex(Object obj, Reflex reflex){
+		if(obj == null)
+			return false;
+		try {
+			Method method = obj.getClass().getMethod(reflex.methodName, reflex.getParametersClasses());
+			Class<?> returnType = method.getReturnType();
+			
+			if(returnType.equals(boolean.class)){
+				return (Boolean)method.invoke(obj, reflex.parameters);
+			}else{
+				throw new RuntimeException("the invoked method must have a return type of boolean");
+			}
+		} catch (Exception e) {
+			if(e instanceof RuntimeException)
+				throw (RuntimeException)e;
+			throw new RuntimeException(e);
+		}
 	}
 }

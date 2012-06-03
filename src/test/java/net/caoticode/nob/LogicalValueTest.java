@@ -66,6 +66,8 @@ public class LogicalValueTest {
 		assertFalse($(24, le(22)).bool());
 		assertFalse($("a", cons(false)).bool());
 		assertTrue($("a", cons(true)).bool());
+		assertTrue($("some string", reflex("startsWith", "some")).bool());
+		assertFalse($("some string", reflex("startsWith", "not found")).bool());
 	}
 	
 	@Test
@@ -77,5 +79,7 @@ public class LogicalValueTest {
 		assertNull($("a", ne("a")).or(38, lt(35)).val());
 		assertEquals($("a", eq("a")).and(38, gt(35)).or("b").val(), 38);
 		assertEquals($("a", eq("a")).and.not(38, gt(35)).or("b").val(), "b");
+		assertEquals($("some string", reflex("startsWith", "some")).val(), "some string");
+		assertNull($("some string", reflex("startsWith", "not found")).val());
 	}
 }
