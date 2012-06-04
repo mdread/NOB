@@ -270,10 +270,12 @@ public class LogicalValue {
 		return (Boolean) val();
 	}
 
-//	@SuppressWarnings("unchecked")
-//	public <T> T valAs(Class<T> type) {
-//		return (T) val();
-//	}
+	@SuppressWarnings("unchecked")
+	public <T> T valAs(Class<T> type) {
+		Object v = val();
+		
+		return v == null ? null : (T) v;
+	}
 
 	public Result result() {
 		doProcess();
